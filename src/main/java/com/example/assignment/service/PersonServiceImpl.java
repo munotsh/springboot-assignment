@@ -1,8 +1,13 @@
 package com.example.assignment.service;
 
+import com.example.assignment.dao.PersonDao;
 import com.example.assignment.dao.PersonDaoImpl;
+import com.example.assignment.exception.ApiInternalServerException;
 import com.example.assignment.exception.ApiRequestException;
+import com.example.assignment.exception.DataException;
+import com.example.assignment.helper.CVSHelper;
 import com.example.assignment.model.Person;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -14,8 +19,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import javax.transaction.Transactional;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -54,6 +60,20 @@ public class PersonServiceImpl implements PersonService {
             else
                 throw new ApiRequestException("can not persist data");
         });
+    }
+
+    @Override
+    public ResponseEntity saveAllFromCSV(List<Person> person) {
+
+        int i = 0;
+        for (Person p : person) {
+            personDao.savePerson(p);
+            i++;
+        }
+        if (i != person.size()) {
+            return ResponseEntity.badRequest().body("bad data found on line number : " + i + " in ");
+        }
+        return ResponseEntity.ok(i);
     }
 
     @Override
@@ -146,5 +166,11 @@ public class PersonServiceImpl implements PersonService {
                 uriComponentsBuilder.toUriString(),
                 httpEntity,
                 Person.class);
+    }
+    public ByteArrayInputStream getAllPersonInCSV() {
+        List<Person> tutorials = personDao.getPerson();
+
+        ByteArrayInputStream in = CVSHelper.tutorialsToCSV(tutorials);
+        return in;
     }
 }
