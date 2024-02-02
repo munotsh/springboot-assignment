@@ -31,6 +31,7 @@ public class SwaggerConfig {
     @Bean
     public UiConfiguration uiConfig()
     {
-        return UiConfigurationBuilder.builder().validatorUrl(StringUtils.EMPTY).build();
+        return UiConfigurationBuilder.builder()
+                .validatorUrl(StringUtils.EMPTY).build();
     }
 }

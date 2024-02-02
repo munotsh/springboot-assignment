@@ -1,13 +1,8 @@
 package com.example.assignment.service;
-
-import com.example.assignment.dao.PersonDao;
 import com.example.assignment.dao.PersonDaoImpl;
-import com.example.assignment.exception.ApiInternalServerException;
 import com.example.assignment.exception.ApiRequestException;
-import com.example.assignment.exception.DataException;
 import com.example.assignment.helper.CVSHelper;
 import com.example.assignment.model.Person;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -21,7 +16,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -41,7 +35,8 @@ public class PersonServiceImpl implements PersonService {
     RestTemplate restTemplate;
 
     @Autowired
-    public PersonServiceImpl(PersonDaoImpl personDao, RestTemplate restTemplate) {
+    public PersonServiceImpl(PersonDaoImpl personDao
+            , RestTemplate restTemplate) {
         this.personDao = personDao;
         this.restTemplate = restTemplate;
     }
@@ -54,7 +49,8 @@ public class PersonServiceImpl implements PersonService {
 //            throw new ApiRequestException("can not persist data");
 //        }
         return CompletableFuture.completedFuture(
-                ResponseEntity.status(HttpStatus.CREATED).body(id)).handle((result, ex) -> {
+                ResponseEntity.status(HttpStatus.CREATED).body(id))
+                .handle((result, ex) -> {
             if (ex == null)
                 return result;
             else
@@ -71,7 +67,8 @@ public class PersonServiceImpl implements PersonService {
             i++;
         }
         if (i != person.size()) {
-            return ResponseEntity.badRequest().body("bad data found on line number : " + i + " in ");
+            return ResponseEntity.badRequest()
+                    .body("bad data found on line number : " + i + " in ");
         }
         return ResponseEntity.ok(i);
     }

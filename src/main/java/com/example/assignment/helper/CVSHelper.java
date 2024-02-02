@@ -7,9 +7,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,8 +16,10 @@ import java.util.stream.Collectors;
 public class CVSHelper {
     public static List<Person> cvsToPerson(InputStream inputStream) {
         List<Person> list = new ArrayList<>();
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {
+        try (BufferedReader fileReader = new
+                BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+             CSVParser csvParser = new CSVParser(fileReader,
+                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {
             list = csvParser.getRecords().stream().map(cvs -> {
                 Person person = new Person();
                 person.setDOB(LocalDate.parse(cvs.get("DOB")));

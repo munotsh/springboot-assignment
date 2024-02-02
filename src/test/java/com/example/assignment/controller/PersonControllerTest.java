@@ -32,56 +32,67 @@ public class PersonControllerTest {
     public void init() {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.configure(
+           SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     @Test
     public void testGetPersonAPI() throws Exception {
-        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.get("/getAllPersons")
+        ResultActions resultActions = this.mockMvc.
+                perform(MockMvcRequestBuilders.get("/getAllPersons")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status()
                         .isOk());
         ArrayList<Person> list = mapper.readerForListOf(Person.class).
-                readValue(resultActions.andReturn().getResponse().getContentAsString());
+                readValue(resultActions.andReturn()
+                        .getResponse().getContentAsString());
         Assertions.assertEquals(list.size(), 3);
-        // .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
-        //.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("3")));
-        //.andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(responseDto.getContent().size())));
+        // .andDo(MockMvcResultHandlers.print()).
+        // andExpect(MockMvcResultMatchers.status().isOk())
+        //.andExpect(MockMvcResultMatchers.content()
+        // .string(Matchers.containsString("3")));
+        //.andExpect(MockMvcResultMatchers.jsonPath("$.content.size()",
+        // CoreMatchers.is(responseDto.getContent().size())));
     }
 
     @Test
     public void testSavePersonAPI() throws Exception {
         Person p = Person.builder().DOB(LocalDate.now()).name("xyz").build();
-        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.post("/save")
+        ResultActions resultActions = this.mockMvc.perform(
+                MockMvcRequestBuilders.post("/save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(p)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("1")));
+                .andExpect(MockMvcResultMatchers.content()
+                .string(Matchers.containsString("1")));
 
     }
 
     @Test
     public void testDeletePersonAPI() throws Exception {
-        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.delete("/deletePerson")
+        ResultActions resultActions = this.mockMvc.
+                perform(MockMvcRequestBuilders.delete("/deletePerson")
                 .param("id", "40")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("Deleted")));
+                .andExpect(MockMvcResultMatchers.content()
+                .string(Matchers.containsString("Deleted")));
 
     }
 
     @Test
     public void testUpdatePersonAPI() throws Exception {
         Person p = Person.builder().DOB(LocalDate.now()).name("Pritam").id(39).build();
-        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.put("/updatePerson")
+        ResultActions resultActions = this.mockMvc.
+                perform(MockMvcRequestBuilders.put("/updatePerson")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(p)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
         Person result = mapper.
-                readValue(resultActions.andReturn().getResponse().getContentAsString(),Person.class);
+                readValue(resultActions.andReturn()
+                .getResponse().getContentAsString(),Person.class);
         Assertions.assertEquals(result.getName(), "Pritam");
 
     }
-
 }
