@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -26,25 +27,21 @@ public class PersonController {
     PersonService personService;
 
 
-    @PostMapping(value = "/save",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/save")
     public ResponseEntity save(@RequestBody Person person) {
         ResponseEntity res = personService.save(person).join();
         if (res.getStatusCode().isError()) {
             throw new ApiRequestException("Cannot persist data");
         }
-        return ResponseEntity.ok().body(res);
+        return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
-    @GetMapping(value = "/getAllPersons",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getAllPersons")
     public ResponseEntity getAllPersons() {
         return ResponseEntity.ok().body(personService.getAllPerson());
     }
 
-    @GetMapping(value = "/getPerson/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getPerson/{id}")
     public ResponseEntity getPersons(@PathVariable int id) {
         if (id == 3) {
             throw new ApiInternalServerException("root user cant be deleted");
@@ -52,8 +49,7 @@ public class PersonController {
         return ResponseEntity.ok().body(personService.getPerson(id));
     }
 
-    @PutMapping(value = "/updatePerson",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/updatePerson")
     public ResponseEntity updatePerson(@RequestBody Person person) {
         Person res = personService.updatePerson(person);
         if (null == res)
@@ -61,14 +57,13 @@ public class PersonController {
         return ResponseEntity.ok().body(res);
     }
 
-    @DeleteMapping(value = "/deletePerson",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/deletePerson")
     public ResponseEntity deletePerson(@RequestParam(name = "id") int id,
                                        @RequestParam(name = "name", required = false) String name) {
         String res = personService.deletePerson(id);
         if (StringUtils.isEmpty(res) && !res.equals("Deleted"))
             throw new ApiRequestException("Can not update person : " + id);
-        return ResponseEntity.ok().body(res);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(res);
     }
 
     @PostMapping("/uploadFile")

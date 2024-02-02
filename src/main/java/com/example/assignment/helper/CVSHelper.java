@@ -10,6 +10,7 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,14 +21,9 @@ public class CVSHelper {
         List<Person> list = new ArrayList<>();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {
-            DateFormat parse = new SimpleDateFormat("yyyy-MM-dd");
             list = csvParser.getRecords().stream().map(cvs -> {
                 Person person = new Person();
-                        try {
-                            person.setDOB(parse.parse(cvs.get("DOB")));
-                        } catch (ParseException parseException) {
-                            parseException.printStackTrace();
-                        }
+                person.setDOB(LocalDate.parse(cvs.get("DOB")));
                 person.setName(cvs.get("name"));
                 return person;
             }).collect(Collectors.toList());
@@ -36,6 +32,7 @@ public class CVSHelper {
             e.printStackTrace();
         }
         return list;
+
     }
 
     public static ByteArrayInputStream tutorialsToCSV(List<Person> persons) {
